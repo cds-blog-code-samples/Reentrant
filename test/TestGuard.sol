@@ -21,7 +21,7 @@ contract TestGuard {
         Assert.equal(target.counter(), 2, "counter should be 2");
     }
 
-    function testLocalExploit() public {
+    function testLocalGuarded() public {
         // try to invoke localRecursion that is reentrant.
         bool result = address(target).call(abi.encodeWithSignature("countLocalRecursive(uint256)", 10));
 
@@ -32,15 +32,37 @@ contract TestGuard {
         Assert.equal(target.counter(), 2, "counter should remain 2");
     }
 
-    function testLocalCallExploit() public {
-        // try to invoke this.call(hash) that is reentrant.
+    function testLocalVulnerable() public {
+        // try to invoke localRecursion that is reentrant.
+        bool result = address(target).call(abi.encodeWithSignature("countLocalRecursiveVulnerable(uint256)", 10));
+
+        // it does not detect reentrancy
+        Assert.isTrue(result, "Does not have a guard");
+
+        // and the counter got fragged
+        Assert.equal(target.counter(), 12, "counter got tickled to 12");
+    }
+
+    function testLocalCallGuarded() public {
+        // invoke this.call(hash) that is reentrant.
         bool result = address(target).call(abi.encodeWithSignature("countThisRecursive(uint256)", 10));
 
-        // it should detect reentrancy and revert
+        // it is guarded and will prevent reentry
         Assert.isFalse(result, "Guard should prevent reentry");
 
-        // and the counter is not changed
-        Assert.equal(target.counter(), 2, "counter should remain 2");
+        // and the counter got fragged
+        Assert.equal(target.counter(), 2, "counter got tickled to 2");
+    }
+
+    function testLocalCallVulnerable() public {
+        // invoke this.call(hash) that is reentrant.
+        bool result = address(target).call(abi.encodeWithSignature("countThisRecursiveVulnerable(uint256)", 10));
+
+        // it does not detect reentrancy
+        Assert.isTrue(result, "Does not have a guard");
+
+        // and the counter got fragged
+        Assert.equal(target.counter(), 12, "counter got tickled to 12");
     }
 
     function testBadContractExploit() public {
