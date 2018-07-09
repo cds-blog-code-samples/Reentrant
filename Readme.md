@@ -6,7 +6,7 @@ transaction. If these functions transfer ether or value then it is a
 vulnerability. See Dao Hack.
 
 ## Solution
-Utilize a singleton `lock` that guards the function call. It is like an entry
+Utilize a ***singleton lock*** that guards the function call. It is like an entry
 ticket that can be used once in any transaction. After it is used, no other call
 that is part of the transaction is allowed to enter functions marked
 `nonReentrant`
@@ -20,45 +20,70 @@ function enters a `nonReentrant` function, the modifier checks the state of
 disengaged(false), closing the lock, or reverts the entire transaction if the
 lock is engaged(true).
 
+When a contract inherits from `ReentrancyGuard` it gets the boolean state variable
+`reentrancyLock`, and a pre-condition modifier to ensure the lock is utilized
+once in the course of a transaction.
+
 ## Sample code
 Open Zeppelin's
 [ReentrancyMock](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/mocks/ReentrancyMock.sol)
-simulates this vulnerability with three function.
+simulates defending against three types of attacks.
 
-1. `countLocalRecursive`, a nonReentrant function that invokes itself.
+
+### The time a guarded function is called recursively
 
 ```solidity
-  function countLocalRecursive(uint256 n) public nonReentrant {
+  function countLocalRecursive(uint256 n)
+      public nonReentrant   // use the lock and proceed 1st time, revert on next
+                            // invocation of nonReentrant guard check
+  {
     if (n > 0) {
       count();
+
+      // make a recursive call, which will trigger
+      // the lock check resulting in the transaction
+      // being reverted.
       countLocalRecursive(n - 1);
     }
   }
 ```
-2. `countThisRecursive`, a nonReentrant function utilizes the low level call
-   mechanism to invoke itself.
+
+### When a guarded function uses `call` to invoke any guarded function
 
 ```solidity
-  function countThisRecursive(uint256 n) public nonReentrant {
+  function countThisRecursive(uint256 n)
+      public nonReentrant   // use the lock and proceed 1st time, revert on next
+                            // invocation of nonReentrant guard check
+  {
     if (n > 0) {
       count();
+
+      // Use low level call mechanism to make a recursive call, which will
+      // trigger the lock check resulting in the transaction being reverted.
       bool result = address(this).call(abi.encodeWithSignature("countThisRecursive(uint256)", n - 1));
+
+      // It is important to `require` this check of the return value
+      // otherwise the transaction will continue
       require(result == true);
     }
   }
 ```
 
-3. `countAndCall`, a nonReentrant function invokes another contract which
-   invokes the calling function's nonReentrant callback function.
+### When an external contract try to multi-dip your guarded functions
 
 ```solidity
-  function countAndCall(ReentrancyAttack attacker) public nonReentrant {
+  function countAndCall(ReentrancyAttack attacker)
+      public nonReentrant   // use the lock and proceed 1st time, revert on next
+                            // invocation of nonReentrant guard check
+  {
     count();
+
+    // Get a pointer/has to the callback function.
     bytes4 func = bytes4(keccak256("callback()"));
+
+    // Trust attacker to do something with a known address.
+    // Of course, the attacker will try to exploit our guarded callback in some
+    // nefarious scheme and the transaction will be reverted.
     attacker.callSender(func);
   }
 ```
-
-## What does this even do? Lets test it
-
-
