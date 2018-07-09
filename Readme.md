@@ -1,15 +1,15 @@
 # A look at Open Zeppelin *ReentrancyGuard*
 
 ## Problem
-Smart Contracts functions can be re-entered numerous times within a single
-transaction. If these functions transfer ether or value then it is a
-vulnerability. See Dao Hack.
+Smart Contract methods can be invoked numerous times within a single
+transaction. If these functions transfer ether or value then it can be exploited
+and should be audited. See [Dao 53mm Hack
+explanation](https://www.youtube.com/watch?v=5JrdR6SRlWE)
 
 ## Solution
-Utilize a ***singleton lock*** that guards the function call. It is like an entry
-ticket that can be used once in any transaction. After it is used, no other call
-that is part of the transaction is allowed to enter functions marked
-`nonReentrant`
+Utilize a ***singleton lock*** to guard the function execution. It is like an entry
+ticket that can be used once in any transaction. After it has been used, no other
+`nonReentrant` function is allowed to be executed for the rest of the transaction.
 
 Open Zeppelin's
 [ReentrancyGuard](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/ReentrancyGuard.sol)
