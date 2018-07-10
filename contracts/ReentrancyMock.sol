@@ -68,6 +68,24 @@ contract ReentrancyMock is ReentrancyGuard {
         attacker.callSender(func);
     }
 
+    function countWithHelperVulnerable(uint256 n)
+        public
+    {
+        if (n > 0) {
+            count();
+            countLocalRecursiveVulnerable(n * 2);
+        }
+    }
+
+    function countWithHelper(uint256 n)
+        public nonReentrant
+    {
+        if (n > 0) {
+            count();
+            countLocalRecursive(n * 2);
+        }
+    }
+
     function count()
         private
     {
