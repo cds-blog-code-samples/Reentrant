@@ -1,5 +1,4 @@
-Examine Open Zeppelin's ReentrancyGuard contract.
-
+Test suite to accompany my Medium post examining [Open Zeppelin's ReentrancyGuard contract](https://medium.com/@cdsudama/a-look-at-open-zeppelins-reentrancyguard-6ff3590d0719).
 
 Versions:
  * Truffle v4.1.13 (core: 4.1.13)
