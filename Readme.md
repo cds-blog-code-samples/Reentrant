@@ -12,3 +12,10 @@ Play:
 3. `npm i -g truffle@4.1.13` # if you don't have it installed
 4. `truffle develop`
 5. `test`
+
+
+## Truffle Sequence diagrams (experimental!)
+
+Best viewed with [pegmatite chrome plugin](https://chrome.google.com/webstore/detail/pegmatite/jegkfbnfbfnohncpcfcimepibmhlkldo)
+
+[Test Guard Transactions](./truffle-seq/testguard.md)
