@@ -1,11 +1,12 @@
-pragma solidity ^0.4.24;
-
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.4.22 <0.9.0;
 
 contract ReentrancyAttack {
 
-  function callSender(bytes4 data) public {
+  function callSender() public {
     // solium-disable-next-line security/no-low-level-calls
-    require(msg.sender.call(data));
+    (bool result,) = msg.sender.call(abi.encode("callback()"));
+    require(result);
   }
 
 }
