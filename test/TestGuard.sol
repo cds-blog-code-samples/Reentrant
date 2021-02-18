@@ -23,6 +23,7 @@ contract TestGuard {
         Assert.equal(target.counter(), 2, "counter should be 2");
     }
 
+    /*
     function testLocalVulnerable() public {
         // try to invoke localRecursion that is reentrant.
         // solhint-disable-next-line
@@ -107,5 +108,6 @@ contract TestGuard {
         // and the counter is not changed
         Assert.equal(target.counter(), 2, "counter should remain 2");
     }
+    */
 
 }
