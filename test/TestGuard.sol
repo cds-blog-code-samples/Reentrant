@@ -1,7 +1,8 @@
-pragma solidity ^0.4.24;
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.4.22 <0.9.0;
 
 import "truffle/Assert.sol";
-import "truffle/DeployedAddresses.sol";
+// import "truffle/DeployedAddresses.sol";
 
 import "../contracts/ReentrancyMock.sol";
 import "../contracts/ReentrancyAttack.sol";
@@ -25,19 +26,19 @@ contract TestGuard {
     function testLocalVulnerable() public {
         // try to invoke localRecursion that is reentrant.
         // solhint-disable-next-line
-        bool result = address(target).call(abi.encodeWithSignature("countLocalRecursiveVulnerable(uint256)", 10));
+        (bool result,) = address(target).call(abi.encodeWithSignature("countLocalRecursiveVulnerable(uint256)", 3));
 
         // it does not detect reentrancy
         Assert.isTrue(result, "Does not have a guard");
 
         // and the counter got fragged
-        Assert.equal(target.counter(), 12, "counter got tickled to 12");
+        Assert.equal(target.counter(), 5, "counter got tickled to 5");
     }
 
     function testLocalGuarded() public {
         // try to invoke localRecursion that is reentrant.
         // solhint-disable-next-line
-        bool result = address(target).call(abi.encodeWithSignature("countLocalRecursive(uint256)", 10));
+        (bool result,) = address(target).call(abi.encodeWithSignature("countLocalRecursive(uint256)", 3));
 
         // it should detect reentrancy and revert
         Assert.isFalse(result, "Guard should prevent reentry");
@@ -49,19 +50,19 @@ contract TestGuard {
     function testLocalCallVulnerable() public {
         // invoke this.call(hash) that is reentrant.
         // solhint-disable-next-line
-        bool result = address(target).call(abi.encodeWithSignature("countThisRecursiveVulnerable(uint256)", 10));
+        (bool result,) = address(target).call(abi.encodeWithSignature("countThisRecursiveVulnerable(uint256)", 3));
 
         // it does not detect reentrancy
         Assert.isTrue(result, "Does not have a guard");
 
         // and the counter got fragged
-        Assert.equal(target.counter(), 12, "counter got tickled to 12");
+        Assert.equal(target.counter(), 5, "counter got tickled to 5");
     }
 
     function testLocalCallGuarded() public {
         // invoke this.call(hash) that is reentrant.
         // solhint-disable-next-line
-        bool result = address(target).call(abi.encodeWithSignature("countThisRecursive(uint256)", 10));
+        (bool result,) = address(target).call(abi.encodeWithSignature("countThisRecursive(uint256)", 5));
 
         // it is guarded and will prevent reentry
         Assert.isFalse(result, "Guard should prevent reentry");
@@ -75,7 +76,7 @@ contract TestGuard {
 
         // try to invoke this.call(hash) that is reentrant.
         // solhint-disable-next-line
-        bool result = address(target).call(abi.encodeWithSignature("countAndCall(address)", evilContract));
+        (bool result,) = address(target).call(abi.encodeWithSignature("countAndCall(address)", evilContract));
 
         // it should detect reentrancy and revert
         Assert.isFalse(result, "Guard should prevent reentry");
@@ -87,7 +88,7 @@ contract TestGuard {
     function testAnotherFunctionVulnerable() public {
         // try to invoke localRecursion that is reentrant.
         // solhint-disable-next-line
-        bool result = address(target).call(abi.encodeWithSignature("countWithHelperVulnerable(uint256)", 10));
+        (bool result,) = address(target).call(abi.encodeWithSignature("countWithHelperVulnerable(uint256)", 10));
 
         // it does not detect reentrancy
         Assert.isTrue(result, "Does not have a guard");
@@ -98,7 +99,7 @@ contract TestGuard {
 
     function testAnotherFunctionGuarded() public {
         // try to invoke localRecursion that is reentrant.
-        bool result = address(target).call(abi.encodeWithSignature("countWithHelper(uint256)", 10));
+        (bool result,) = address(target).call(abi.encodeWithSignature("countWithHelper(uint256)", 3));
 
         // it should detect reentrancy and revert
         Assert.isFalse(result, "Guard should prevent reentry");

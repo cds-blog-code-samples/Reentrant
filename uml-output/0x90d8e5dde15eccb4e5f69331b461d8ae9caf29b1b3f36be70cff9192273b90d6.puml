@@ -1,0 +1,47 @@
+
+
+@startuml
+
+autonumber
+skinparam legendBackgroundColor #FEFECE
+
+<style>
+      header {
+        HorizontalAlignment left
+        FontColor purple
+        FontSize 14
+        Padding 10
+      }
+    </style>
+
+header Insights by Truffle
+
+title Txn Hash: 0x90d8e5dde15eccb4e5f69331b461d8ae9caf29b1b3f36be70cff9192273b90d6
+
+
+actor EOA as "EOA"
+participant TestGuard_01 as "TestGuard_01"
+participant ReentrancyMock_01 as "ReentrancyMock_01"
+
+"EOA" -> "TestGuard_01" ++: beforeEach()
+"TestGuard_01" -> "ReentrancyMock_01" ++: constructor()
+"ReentrancyMock_01" -> "TestGuard_01" --: 
+"TestGuard_01" -> "ReentrancyMock_01" ++: callback()
+"ReentrancyMock_01" -> "ReentrancyMock_01" ++: count()
+"ReentrancyMock_01" -> "ReentrancyMock_01" --: 
+"ReentrancyMock_01" -> "TestGuard_01" --: 
+"TestGuard_01" -> "ReentrancyMock_01" ++: callback()
+"ReentrancyMock_01" -> "ReentrancyMock_01" ++: count()
+"ReentrancyMock_01" -> "ReentrancyMock_01" --: 
+"ReentrancyMock_01" -> "TestGuard_01" --: 
+"TestGuard_01" -> "EOA" --: 
+
+legend
+Participant details
+<#FEFECE,#D0D000>|= Alias |= Contract name |= Address |
+<#FEFECE>| EOA | Externally Owned Account | 0x074879d0D753cf4A850a6a3614D60d0b2309A58F |
+<#FEFECE>| TestGuard_01 | TestGuard | 0x63fb898997d985983B63843bd5a1d6A7AD11b95A |
+<#FEFECE>| ReentrancyMock_01 | ReentrancyMock | 0xEA862d446ed0aa614F882485c0E168132fc816d6 |
+endlegend
+
+@enduml

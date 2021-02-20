@@ -1,4 +1,5 @@
-pragma solidity ^0.4.24;
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.4.22 <0.9.0;
 
 import "./ReentrancyGuard.sol";
 import "./ReentrancyAttack.sol";
@@ -8,7 +9,7 @@ contract ReentrancyMock is ReentrancyGuard {
 
     uint256 public counter;
 
-    constructor() public {
+    constructor() {
         counter = 0;
     }
 
@@ -43,7 +44,7 @@ contract ReentrancyMock is ReentrancyGuard {
         if (n > 0) {
             count();
             // solium-disable-next-line security/no-low-level-calls
-            bool result = address(this).call(abi.encodeWithSignature("countThisRecursive(uint256)", n - 1));
+            (bool result,) = address(this).call(abi.encodeWithSignature("countThisRecursive(uint256)", n - 1));
             require(result == true);
         }
     }
@@ -55,7 +56,7 @@ contract ReentrancyMock is ReentrancyGuard {
         if (n > 0) {
             count();
             // solium-disable-next-line security/no-low-level-calls
-            bool result = address(this).call(abi.encodeWithSignature("countThisRecursiveVulnerable(uint256)", n - 1));
+            (bool result,) = address(this).call(abi.encodeWithSignature("countThisRecursiveVulnerable(uint256)", n - 1));
             require(result == true);
         }
     }
@@ -64,8 +65,10 @@ contract ReentrancyMock is ReentrancyGuard {
         public nonReentrant
     {
         count();
-        bytes4 func = bytes4(keccak256("callback()"));
-        attacker.callSender(func);
+        // bytes4 func = bytes4(keccak256("callback()"));
+        // attacker.callSender(func);
+        // bytes4 func = bytes4(keccak256("callback()"));
+        attacker.callSender();
     }
 
     function countWithHelperVulnerable(uint256 n)

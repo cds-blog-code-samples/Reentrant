@@ -1,0 +1,24 @@
+{
+  "name": "oz-reentrancy",
+  "description": "Truffle contracts for planting",
+  "version": "0.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "rm -rf build && truffle compile",
+    "ganache": "./scripts/start-ganache.zsh",
+    "txns": "node scripts/txns.js | grep -iv done",
+    "seq": "node ~/work/truffle/packages/core/cli.js run tx2seq --short-participant-names",
+    "seql": "node ~/work/truffle/packages/core/cli.js run tx2seq",
+    "seq:d": "node --inspect-brk ~/work/truffle/packages/core/cli.js run tx2seq",
+    "umls": "./scripts/make-umls",
+    "bn": "./scripts/bn.awk",
+    "md": "./scripts/md.zsh",
+    "debug:link": "yarn link @truffle/codec; yarn link @truffle/core;  yarn link @truffle/debugger; yarn link @truffle/environment",
+    "debug:unlink": "yarn unlink @truffle/codec; yarn unlink @truffle/core;  yarn unlink @truffle/debugger; yarn unlink @truffle/environment"
+  },
+  "dependencies": {
+    "web3": "^1.3.4"
+  }
+}
